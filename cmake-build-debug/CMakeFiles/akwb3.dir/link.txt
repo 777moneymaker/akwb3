@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/akwb3.dir/main.cpp.o CMakeFiles/akwb3.dir/Libs/Map.cpp.o  -o akwb3 
