@@ -1,41 +1,174 @@
-//
-// Created by moneymaker on 12.12.2019.
-//
+//    _____ _____ _____                                                 _
+//   |___  |___  |___  | __ ___   ___  _ __   ___ _   _ _ __ ___   __ _| | _____ _ __
+//      / /   / /   / / '_ ` _ \ / _ \| '_ \ / _ \ | | | '_ ` _ \ / _` | |/ / _ \ '__|
+//     / /   / /   / /| | | | | | (_) | | | |  __/ |_| | | | | | | (_| |   <  __/ |
+//    /_/   /_/   /_/ |_| |_| |_|\___/|_| |_|\___|\__, |_| |_| |_|\__,_|_|\_\___|_|
+//                                                |___/
 
-#include "Map.h++"
+#include "Map.hpp"
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <fstream>
 
+using namespace std;
+
+void Map::assembleMap(int iteration, bool &found){
+    int number;
+    bool sum_found = false;
+
+    auto *used = new vector<bool>;
+
+    for(int i = 0; i < this->lengths.size(); i++)
+        (*used).push_back(false);
+
+    for(int i = 0; i < this->map_size; i++){
+        for(int j = 0; j < this->lengths.size(); j++){
+            if(this->lengths[j] == this->solution[i]){
+                if(not(*used)[j]){
+                    (*used)[j] = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(iteration == this->map_size - 1){
+        bool temp_solution = true;
+        vector<int> sums;
+
+        for(int i = 0; i < this->map_size; i++){
+            int tmp = this->solution[i];
+            sums.push_back(tmp);
+            for(int j = i + 1; j < this->map_size; j++){
+                int sum = tmp + this->solution[j];
+                tmp += this->solution[j];
+                sums.push_back(sum);
+            }
+        }
+
+        sort(sums.begin(), sums.end());
+        sort(this->lengths.begin(), this->lengths.end());
+
+        if(sums.size() not_eq this->lengths.size()){
+            temp_solution = false;
+        }else{
+            for(int k = 0; k < sums.size(); k++){
+                if(sums[k] not_eq this->lengths[k]){
+                    temp_solution = false;
+                    break;
+                }
+            }
+        }
+
+        if(temp_solution){
+            cout << "Solution found: " << endl;
+            for(auto &v : this->solution)
+                cout << v << " ";
+            cout << endl << endl;
+            found = true;
+        }else{
+            int wrong_num = this->solution[iteration];
+            for(int i = 0; i < this->lengths.size(); i++){
+                if(wrong_num == this->lengths[i]){
+                    this->solution[iteration] = 0;
+                    (*used)[i] = false;
+                    break;
+                }
+            }
+        }
+
+    }else{
+        for(int i = 0; i < this->lengths.size(); i++){
+            bool worth = true;
+
+            if(not (*used)[i]){
+                number = this->lengths[i];
+                this->solution[iteration + 1] = number;
+
+                for(int j = 0; j < this->map_size - 1; j++){
+                    int assembly = this->solution[j];
+                    for(int k = j + 1; k < this->map_size; k++){
+                        int sum = assembly + this->solution[k];
+                        assembly += this->solution[k];
+                        sum_found = false;
+
+                        if(not sum)
+                            sum_found = true;
+                        else
+                            for(auto &val : this->lengths){
+                                if(sum == val){
+                                    sum_found = true;
+                                }
+                            }
+                        if(not sum_found){
+                            worth = false;
+                            this->solution[iteration + 1] = 0;
+                            break;
+                        }else{
+                            worth = true;
+                        }
+                    }
+                    if(not sum_found)
+                        break;
+                }
+                if(worth){
+                    assembleMap(iteration + 1, found);
+                }
+            }
+            if(found){
+                break;
+            }
+        }
+    }
+
+}
+
 void Map::readLengths(){
+    // Read
     int len;
-    std::fstream file("map.txt", std::ios::in);
-    if(not(file.good())){
-        std::cout << "Bad file!" << std::endl;
+    fstream file("map.txt", ios::in);
+    if(not file.good()){
+        cout << "Bad file!" << endl;
         return;
     }else{
-        while(not(file.eof())){
+        while(not file.eof()){
             file >> len;
             this->lengths.push_back(len);
         }
     }
-    for(auto &c : this->lengths){
-        std::cout << c << std::endl;
-    }
+
     this->isValid();
+
+    // Assign length and start value
+    auto *tmp = new vector<int>;
+    *tmp = this->lengths;
+
+    this->seq_length = *max_element(tmp->begin(), tmp->end());
+    tmp->erase(find(tmp->begin(), tmp->end(), this->seq_length));
+    this->start_chop = this->seq_length - *max_element(tmp->begin(), tmp->end());
+    this->solution.resize(this->map_size);
+    this->solution[0] = this->start_chop;
+    delete tmp;
+
     return void();
 }
 
-boolean Map::isValid(){
-    std::vector<int> tmp;
-    sort(tmp.begin(), tmp.end());
+void Map::isValid(){
+    bool valid_size = false;
 
-    for(auto &c : this->lengths){
-        if(not(count(tmp.begin(), tmp.end(), c))){
-            tmp.push_back(c);
+    for(int i = 1; i <= this->lengths.size(); i++){
+        if((i+1) * (i+2) / 2 == this->lengths.size() and this->lengths[i-1] > 0){
+            this->map_size = i + 1;
+            valid_size = true;
+            break;
+        }else{
+            continue;
         }
     }
-    // TODO Check If values are valid.
-    return true;
+    if(not valid_size){
+        cerr << "Instance is not valid" << endl;
+        exit(EXIT_FAILURE);
+    }
+    return void();
 }

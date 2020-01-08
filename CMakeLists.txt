@@ -3,4 +3,4 @@ project(akwb3)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(akwb3 main.cpp Libs/Map.cpp Libs/Map.h++)
+add_executable(akwb3 main.cpp Libs/Map.cpp Libs/Map.hpp)
