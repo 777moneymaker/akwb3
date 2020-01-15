@@ -22,7 +22,7 @@ private:
 public:
     void readLengths();
 
-    void assembleMap(int iteration, bool &found);
+    std::vector<int> assembleMap(int iteration, bool &found);
 };
 
 

@@ -6,21 +6,29 @@
 //                                                |___/
 
 #include <iostream>
+#include <fstream>
 #include "Libs/Map.hpp"
 
 using namespace std;
 
 int main() {
     bool found = false;
-    auto *M = new Map;
+    Map *M = new Map;
     M->readLengths();
 
     cout << endl << "Searching for solution..." << endl << endl;
 
     // Time measure and main function.
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    M->assembleMap(0, found);
+    auto solution = M->assembleMap(0, found);
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    // Write to file
+    fstream fh("map.txt", ios::out);
+    for(auto &num : solution){
+        fh << num << " ";
+    }
+    fh.close();
 
     // Print time.
     cout << "Time: " << endl
@@ -28,5 +36,6 @@ int main() {
          << chrono::duration_cast<chrono::microseconds>(end - begin).count() << "[µs]" << endl
          << chrono::duration_cast<chrono::nanoseconds>(end - begin).count() << "[ns]" << endl;
 
+    delete M;
     return 0;
 }

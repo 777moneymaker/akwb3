@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void Map::assembleMap(int iteration, bool &found){
+vector<int> Map::assembleMap(int iteration, bool &found){
     int number;
     bool sum_found = false;
 
@@ -82,7 +82,7 @@ void Map::assembleMap(int iteration, bool &found){
         for(int i = 0; i < this->lengths.size(); i++){
             bool worth = true;
 
-            if(not (*used)[i]){
+            if(not(*used)[i]){
                 number = this->lengths[i];
                 this->solution[iteration + 1] = number;
 
@@ -121,13 +121,13 @@ void Map::assembleMap(int iteration, bool &found){
             }
         }
     }
-
+    return this->solution;
 }
 
 void Map::readLengths(){
     // Read
     int len;
-    fstream file("map.txt", ios::in);
+    fstream file("input.txt", ios::in);
     if(not file.good()){
         cout << "Bad file!" << endl;
         return;
