@@ -13,7 +13,15 @@
 
 using namespace std;
 
-vector<int> Map::assembleMap(int iteration, bool &found){
+vector<int> Map::getLengths(){
+    return this->lengths;
+}
+
+vector<int> Map::getSolution(){
+    return this->solution;
+}
+
+void Map::assembleMap(int iteration, bool &found){
     int number;
     bool sum_found = false;
 
@@ -77,23 +85,23 @@ vector<int> Map::assembleMap(int iteration, bool &found){
                 }
             }
         }
-
     }else{
+        // for every element
         for(int i = 0; i < this->lengths.size(); i++){
             bool worth = true;
 
+            // if element is not used
             if(not(*used)[i]){
                 number = this->lengths[i];
                 this->solution[iteration + 1] = number;
 
                 for(int j = 0; j < this->map_size - 1; j++){
                     int assembly = this->solution[j];
-                    for(int k = j + 1; k < this->map_size; k++){
+                    for(int k = j+1; k < this->map_size; k++){
                         int sum = assembly + this->solution[k];
                         assembly += this->solution[k];
                         sum_found = false;
-
-                        if(not sum)
+                        if(sum == 0)
                             sum_found = true;
                         else
                             for(auto &val : this->lengths){
@@ -121,7 +129,6 @@ vector<int> Map::assembleMap(int iteration, bool &found){
             }
         }
     }
-    return this->solution;
 }
 
 void Map::readLengths(){
@@ -156,7 +163,6 @@ void Map::readLengths(){
 
 void Map::isValid(){
     bool valid_size = false;
-
     for(int i = 1; i <= this->lengths.size(); i++){
         if((i+1) * (i+2) / 2 == this->lengths.size() and this->lengths[i-1] > 0){
             this->map_size = i + 1;

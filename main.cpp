@@ -15,26 +15,39 @@ int main() {
     bool found = false;
     Map *M = new Map;
     M->readLengths();
-
     cout << endl << "Searching for solution..." << endl << endl;
 
     // Time measure and main function.
-    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    auto solution = M->assembleMap(0, found);
-    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+    auto begin = chrono::high_resolution_clock::now();
 
+    M->assembleMap(0, found);
+
+    auto end = chrono::high_resolution_clock::now();
+
+    chrono::duration<double> time_sec = end - begin;
+    chrono::duration<double, milli> time_micro = end - begin;
+
+    auto solution = M->getSolution();
+    auto lengths = M->getLengths();
     // Write to file
-    fstream fh("map.txt", ios::out);
+    fstream fh("map.txt", ios::app);
+    fh << "Instance: " << endl;
+    for(auto &num : lengths){
+        fh << num << " ";
+    }
+    fh << endl << "Map: " << endl;
     for(auto &num : solution){
         fh << num << " ";
     }
+    fh << endl << "Time: " << endl
+        << time_sec.count() << "[s]" << endl
+        << time_micro.count() << "[ms]" << endl << endl;
     fh.close();
 
     // Print time.
     cout << "Time: " << endl
-         << chrono::duration_cast<chrono::seconds>(end - begin).count() << "[s]" << endl
-         << chrono::duration_cast<chrono::microseconds>(end - begin).count() << "[µs]" << endl
-         << chrono::duration_cast<chrono::nanoseconds>(end - begin).count() << "[ns]" << endl;
+        << time_sec.count() << "[s]" << endl
+        << time_micro.count() << "[ms]" << endl << endl;
 
     delete M;
     return 0;
