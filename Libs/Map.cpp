@@ -165,6 +165,7 @@ void Map::readLengths(){
     this->solution.resize(this->map_size);
     this->solution[0] = this->start_chop;
     //shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
+    //reverse(this->lengths.begin(), this->lengths.end());
     delete tmp;
 
     return void();
