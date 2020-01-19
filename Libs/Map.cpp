@@ -7,6 +7,7 @@
 
 #include "Map.hpp"
 #include <iostream>
+#include <random>
 #include <vector>
 #include <algorithm>
 #include <fstream>
@@ -31,12 +32,10 @@ void Map::assembleMap(int iteration, bool &found){
         (*used).push_back(false);
 
     for(int i = 0; i < this->map_size; i++){
-        for(int j = 0; j < this->lengths.size(); j++){
-            if(this->lengths[j] == this->solution[i]){
-                if(not(*used)[j]){
-                    (*used)[j] = true;
-                    break;
-                }
+        if(this->lengths[i] == this->solution[i]){
+            if(not(*used)[i]){
+                (*used)[i] = true;
+                break;
             }
         }
     }
@@ -54,33 +53,40 @@ void Map::assembleMap(int iteration, bool &found){
                 sums.push_back(sum);
             }
         }
-
+        auto *comparsion = new vector<int>;
+        *comparsion = this->lengths;
         sort(sums.begin(), sums.end());
-        sort(this->lengths.begin(), this->lengths.end());
+        sort(comparsion->begin(), comparsion->end());
 
-        if(sums.size() not_eq this->lengths.size()){
+        if(sums.size() not_eq comparsion->size()){
             temp_solution = false;
+            delete comparsion;
         }else{
             for(int k = 0; k < sums.size(); k++){
-                if(sums[k] not_eq this->lengths[k]){
+                if(sums[k] not_eq (*comparsion)[k]){
                     temp_solution = false;
+                    delete comparsion;
                     break;
                 }
             }
         }
 
         if(temp_solution){
-            cout << "Solution found: " << endl;
+            cout <<endl<< "Solution found: " << endl;
+            sort(this->solution.begin(), this->solution.end());
             for(auto &v : this->solution)
                 cout << v << " ";
             cout << endl << endl;
             found = true;
+            return;
         }else{
             int wrong_num = this->solution[iteration];
             for(int i = 0; i < this->lengths.size(); i++){
                 if(wrong_num == this->lengths[i]){
-                    this->solution[iteration] = 0;
-                    (*used)[i] = false;
+                    for(int j = i; j < this->solution.size(); j++){
+                        this->solution[j] = 0;
+                        (*used)[j] = false;
+                    }
                     break;
                 }
             }
@@ -94,10 +100,9 @@ void Map::assembleMap(int iteration, bool &found){
             if(not(*used)[i]){
                 number = this->lengths[i];
                 this->solution[iteration + 1] = number;
-
-                for(int j = 0; j < this->map_size - 1; j++){
+                for(int j = 0; j < this->map_size; j++){
                     int assembly = this->solution[j];
-                    for(int k = j+1; k < this->map_size; k++){
+                    for(int k = j + 1; k < this->map_size; k++){
                         int sum = assembly + this->solution[k];
                         assembly += this->solution[k];
                         sum_found = false;
@@ -107,21 +112,24 @@ void Map::assembleMap(int iteration, bool &found){
                             for(auto &val : this->lengths){
                                 if(sum == val){
                                     sum_found = true;
+                                    break;
                                 }
                             }
                         if(not sum_found){
                             worth = false;
-                            this->solution[iteration + 1] = 0;
-                            break;
                         }else{
                             worth = true;
                         }
                     }
-                    if(not sum_found)
-                        break;
+                    if(not(sum_found))
+                    break;
                 }
                 if(worth){
                     assembleMap(iteration + 1, found);
+                }else{
+                    for(int i = iteration+1; i < this->solution.size(); i++){
+                        this->solution[i] = 0;
+                    }
                 }
             }
             if(found){
@@ -156,6 +164,7 @@ void Map::readLengths(){
     this->start_chop = this->seq_length - *max_element(tmp->begin(), tmp->end());
     this->solution.resize(this->map_size);
     this->solution[0] = this->start_chop;
+    //shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
     delete tmp;
 
     return void();
