@@ -7,7 +7,6 @@
 
 #include "Map.hpp"
 #include <iostream>
-#include <random>
 #include <vector>
 #include <algorithm>
 #include <fstream>
@@ -27,16 +26,18 @@ void Map::assembleMap(int iteration, bool &found){
     bool sum_found = false;
 
     auto *used = new vector<bool>;
-
     for(int i = 0; i < this->lengths.size(); i++)
-        (*used).push_back(false);
+        used->push_back(false);
 
+    for(auto &v : this->solution){
+        cout << v << " ";
+    }
+    cout<< endl;
     for(int i = 0; i < this->lengths.size(); i++){
-        if(count(this->solution.begin(), this->solution.end(), this->lengths[i])){
-            if(not(*used)[i]){
-                (*used)[i] = true;
-                break;
-            }
+        bool num_belongs = (bool)count(this->solution.begin(), this->solution.end(), this->lengths[i]);
+        if(num_belongs and not((*used)[i])){
+            (*used)[i] = true;
+            break;
         }
     }
 
@@ -53,19 +54,16 @@ void Map::assembleMap(int iteration, bool &found){
                 sums.push_back(sum);
             }
         }
-        auto *comparsion = new vector<int>;
-        *comparsion = this->lengths;
+        auto comparsion = this->lengths;
         sort(sums.begin(), sums.end());
-        sort(comparsion->begin(), comparsion->end());
+        sort(comparsion.begin(), comparsion.end());
 
-        if(sums.size() not_eq comparsion->size()){
+        if(sums.size() not_eq comparsion.size()){
             temp_solution = false;
-            delete comparsion;
         }else{
             for(int k = 0; k < sums.size(); k++){
-                if(sums[k] not_eq (*comparsion)[k]){
+                if(sums[k] not_eq comparsion[k]){
                     temp_solution = false;
-                    delete comparsion;
                     break;
                 }
             }
@@ -80,13 +78,10 @@ void Map::assembleMap(int iteration, bool &found){
             found = true;
             return;
         }else{
-            int wrong_num = this->solution[iteration];
-            for(int i = 0; i < this->lengths.size(); i++){
-                if(wrong_num == this->lengths[i]){
-                    for(int j = i; j < this->solution.size(); j++){
-                        this->solution[j] = 0;
-                        (*used)[j] = false;
-                    }
+            for(int i = 1; i < this->solution.size(); i++){
+                if(this->solution[i] == 0){
+                    this->solution[i-1] = 0;
+                    (*used)[i-1] = false;
                     break;
                 }
             }
@@ -97,7 +92,7 @@ void Map::assembleMap(int iteration, bool &found){
             bool worth = true;
 
             // if element is not used
-            if(not(*used)[i]){
+            if(not (*used)[i]){
                 number = this->lengths[i];
                 this->solution[iteration + 1] = number;
                 for(int j = 0; j < this->map_size; j++){
@@ -115,20 +110,17 @@ void Map::assembleMap(int iteration, bool &found){
                                     break;
                                 }
                             }
-                        if(not sum_found){
-                            worth = false;
-                        }else{
-                            worth = true;
-                        }
+                        worth = sum_found;
                     }
-                    if(not(sum_found))
-                    break;
+                    if(not sum_found)
+                        break;
                 }
                 if(worth){
                     assembleMap(iteration + 1, found);
                 }else{
-                    for(int i = iteration+1; i < this->solution.size(); i++){
-                        this->solution[i] = 0;
+                    for(int l = iteration+1; l < this->solution.size(); l++){
+                        this->solution[l] = 0;
+                        (*used)[l] = false;
                     }
                 }
             }
@@ -136,6 +128,7 @@ void Map::assembleMap(int iteration, bool &found){
                 break;
             }
         }
+        delete used;
     }
 }
 
