@@ -31,8 +31,8 @@ void Map::assembleMap(int iteration, bool &found){
     for(int i = 0; i < this->lengths.size(); i++)
         (*used).push_back(false);
 
-    for(int i = 0; i < this->map_size; i++){
-        if(this->lengths[i] == this->solution[i]){
+    for(int i = 0; i < this->lengths.size(); i++){
+        if(count(this->solution.begin(), this->solution.end(), this->lengths[i])){
             if(not(*used)[i]){
                 (*used)[i] = true;
                 break;
