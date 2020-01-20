@@ -31,18 +31,18 @@ int main() {
 
     auto solution = M->getSolution();
     auto lengths = M->getLengths();
-    if(count(solution.begin(), solution.end(), 0)){
-        cerr << "Instance has no solution - it contains error(s)." << endl;
-    }
+//    if(count(solution.begin(), solution.end(), 0)){
+//        cerr << "Instance has no solution - it contains error(s)." << endl;
+//    }
     // Write to file
     fstream fh("map.txt", ios::app);
     fh << "Instance: " << endl;
-    for(auto &num : lengths){
-        fh << num << " ";
+    for(auto num : lengths){
+        fh << *num << " ";
     }
     fh << endl << "Map: " << endl;
-    for(auto &num : solution){
-        fh << num << " ";
+    for(auto num : solution){
+        fh << *num << " ";
     }
     fh << endl << "Time: " << endl
         << time_sec.count() << "[s]" << endl

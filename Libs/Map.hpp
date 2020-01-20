@@ -14,8 +14,8 @@
 class Map{
 private:
     int seq_length, map_size, start_chop;
-    std::vector<int> lengths;
-    std::vector<int> solution;
+    std::vector<int*> lengths;
+    std::vector<int*> solution;
 
     void isValid();
 
@@ -24,8 +24,8 @@ public:
 
     void assembleMap(int iteration, bool &found);
 
-    std::vector<int> getSolution();
-    std::vector<int> getLengths();
+    std::vector<int*> getSolution();
+    std::vector<int*> getLengths();
 };
 
 
