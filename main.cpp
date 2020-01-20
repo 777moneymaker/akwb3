@@ -18,7 +18,7 @@ int main() {
     Map *M = new Map;
     M->readLengths();
     cout << endl << "Searching for solution..." << endl << endl;
-
+    // 1, 1, 1, 1, 1, 1, 9, 4, 7, 2, 8
     // Time measure and main function.
     auto begin = chrono::high_resolution_clock::now();
 
@@ -31,7 +31,7 @@ int main() {
 
     auto solution = M->getSolution();
     auto lengths = M->getLengths();
-//    if(count(solution.begin(), solution.end(), 0)){
+//    if(count(solution.begin(), solution.end(), nullptr)){
 //        cerr << "Instance has no solution - it contains error(s)." << endl;
 //    }
     // Write to file

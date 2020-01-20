@@ -20,6 +20,8 @@ private:
     void isValid();
 
 public:
+
+    int getMapSize();
     void readLengths();
 
     void assembleMap(int iteration, bool &found);

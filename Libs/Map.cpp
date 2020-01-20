@@ -14,6 +14,10 @@
 
 using namespace std;
 
+int Map::getMapSize(){
+    return this->map_size;
+}
+
 vector<int*> Map::getLengths(){
     return this->lengths;
 }
@@ -24,25 +28,18 @@ vector<int*> Map::getSolution(){
 
 void Map::assembleMap(int iteration, bool &found){
     bool sum_found = false;
+    vector<int> used;
+    used.resize(this->seq_length);
 
-    auto *used = new vector<bool>;
-    for(int i = 0; i < this->lengths.size(); i++)
-        used->push_back(false);
-
-    for(auto v : this->solution){
-        if(v == nullptr)
-            cout << 0 << " ";
-        else
-            cout << *v << " ";
-    }
-    cout<< endl;
     for(int i = 0; i < this->lengths.size(); i++){
-        bool num_belongs = (bool)count(this->solution.begin(), this->solution.end(), this->lengths[i]);
-        if(num_belongs and not((*used)[i])){
-            (*used)[i] = true;
+        for(int j = 0; j < this->solution.size(); j++){
+            if(this->solution[j] == this->lengths[i]){
+                if(not(used[i])){
+                    used[i] = 1;
+                }
+            }
         }
     }
-
     if(iteration == this->map_size - 1){
         bool temp_solution = true;
         vector<int> sums;
@@ -82,65 +79,62 @@ void Map::assembleMap(int iteration, bool &found){
             found = true;
             return;
         }else{
-            for(int i = 1; i < this->solution.size(); i++){
-                if(this->solution[i] == nullptr){
-                    this->solution[i-1] = nullptr;
-                    (*used)[i-1] = false;
-                    break;
+            for(int i = 0; i < this->lengths.size(); i++){
+                if(this->lengths[i] == this->solution[iteration]){
+                    used[i] = 0;
                 }
             }
+            this->solution[iteration] = nullptr;
         }
     }else{
         for(int i = 0; i < this->lengths.size(); i++){
             bool worth = true;
 
-            // if element is not used
-            if(not (*used)[i]){
+            if(not used[i]){
                 this->solution[iteration + 1] = this->lengths[i];
-                for(int j = 0; j < this->map_size; j++){
+                for(int j = 0; j < this->solution.size(); j++){
 
                     int assembly = this->solution[j] == nullptr ? 0 : *this->solution[j];
 
-                    for(int k = j + 1; k < this->map_size; k++){
+                    for(int k = j + 1; k < this->solution.size(); k++){
                         int sum = this->solution[k] == nullptr ? assembly + 0 : assembly + *this->solution[k];
                         assembly += this->solution[k] == nullptr ? 0 : *this->solution[k];
-//                        if(this->solution[k] == nullptr){
-//                            sum = assembly + 0;
-//                            assembly += 0;
-//                        }else{
-//                            sum = assembly + *this->solution[k];
-//                            assembly += *this->solution[k];
-//                        }
                         sum_found = false;
-                        if(sum == 0)
+                        if(sum == 0){
                             sum_found = true;
-                        else
+                        }else{
                             for(auto val : this->lengths){
                                 if(sum == *val){
                                     sum_found = true;
                                     break;
                                 }
                             }
+                        }
                         worth = sum_found;
+                        if(not worth){
+                            break;
+                        }
                     }
-                    if(not sum_found)
+                    if(not worth)
                         break;
                 }
+                if(found)
+                    break;
+
                 if(worth){
                     assembleMap(iteration + 1, found);
                 }else{
-                    for(int l = iteration+1; l < this->solution.size(); l++){
-                        this->solution[l] = nullptr;
-                        (*used)[l] = false;
-                    }
+                    for(int n = iteration+1; n< this->solution.size(); n++)
+                        this->solution[n] = nullptr;
+                    continue;
                 }
             }
-            if(found){
-                break;
-            }
         }
-        delete used;
     }
+}
+
+bool ptrVal(int *a, int *b){
+    return *a < *b;
 }
 
 void Map::readLengths(){
@@ -180,7 +174,6 @@ void Map::readLengths(){
         }
     }
     this->start_chop = *max1 - *max2;
-    this->seq_length = *max1;
     this->solution.resize(this->map_size);
     for(int i = 0; i < this->lengths.size(); i++){
         if(*this->lengths[i] == this->start_chop){
@@ -188,16 +181,19 @@ void Map::readLengths(){
             break;
         }
     }
-    shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
-    //reverse(this->lengths.begin(), this->lengths.end());
+//    shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
+//    sort(this->lengths.begin(), this->lengths.end(), ptrVal);
 
     return void();
 }
 
+
+
 void Map::isValid(){
     bool valid_size = false;
     for(int i = 1; i <= this->lengths.size(); i++){
-        if((i+1) * (i+2) / 2 == this->lengths.size() and *this->lengths[i-1] > 0){
+        if((i+1) * (i+2) / 2 == this->lengths.size()){
+            this->seq_length = (i+1) * (i+2) / 2;
             this->map_size = i + 1;
             valid_size = true;
             break;

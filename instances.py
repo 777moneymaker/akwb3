@@ -7,7 +7,7 @@ import random
 
 VALID_SIZES = [i for i in range(1, 120) for n in range(1, 120) if i == (n+1)*(n+2) // 2]
 
-rand_map, lst = [2, 5, 6, 8, 11, 4, 20, 120], []
+rand_map, lst = [1, 1, 2, 1, 2, 4, 6], []
 
 for i in range(len(rand_map)):
 
@@ -18,7 +18,7 @@ for i in range(len(rand_map)):
 		num = assembly + rand_map[j]
 		assembly += rand_map[j]
 		lst.append(num)
-print(lst)
+print(len(lst))
 
 with open('instance.txt', 'w+') as fh:
-	fh.write(' '.join(str(num) for num in lst))
+	fh.write(' '.join(str(num) for num in sorted(lst)))
