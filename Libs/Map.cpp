@@ -14,15 +14,12 @@
 
 using namespace std;
 
-int Map::getMapSize(){
-    return this->map_size;
-}
 
-vector<int*> Map::getLengths(){
+vector<int *> Map::getLengths(){
     return this->lengths;
 }
 
-vector<int*> Map::getSolution(){
+vector<int *> Map::getSolution(){
     return this->solution;
 }
 
@@ -72,7 +69,7 @@ void Map::assembleMap(int iteration, bool &found){
         }
 
         if(temp_solution){
-            cout <<endl<< "Solution found: " << endl;
+            cout << endl << "Solution found: " << endl;
             for(auto v : this->solution)
                 cout << *v << " ";
             cout << endl << endl;
@@ -124,7 +121,7 @@ void Map::assembleMap(int iteration, bool &found){
                 if(worth){
                     assembleMap(iteration + 1, found);
                 }else{
-                    for(int n = iteration+1; n< this->solution.size(); n++)
+                    for(int n = iteration + 1; n < this->solution.size(); n++)
                         this->solution[n] = nullptr;
                     continue;
                 }
@@ -156,10 +153,10 @@ void Map::readLengths(){
     // Assign length and start value
 
     int *max1, *max2;
-    if(*this->lengths[0] > *this->lengths[1]) {
+    if(*this->lengths[0] > *this->lengths[1]){
         max2 = this->lengths[1];
         max1 = this->lengths[0];
-    } else {
+    }else{
         max2 = this->lengths[0];
         max1 = this->lengths[1];
     }
@@ -168,8 +165,7 @@ void Map::readLengths(){
         if(*this->lengths[i] >= *max1){
             max2 = max1;
             max1 = this->lengths[i];
-        }
-        else if(*this->lengths[i] > *max2){
+        }else if(*this->lengths[i] > *max2){
             max2 = this->lengths[i];
         }
     }
@@ -181,19 +177,18 @@ void Map::readLengths(){
             break;
         }
     }
-//    shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
-//    sort(this->lengths.begin(), this->lengths.end(), ptrVal);
+    //    shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
+    //    sort(this->lengths.begin(), this->lengths.end(), ptrVal);
 
     return void();
 }
 
 
-
 void Map::isValid(){
     bool valid_size = false;
     for(int i = 1; i <= this->lengths.size(); i++){
-        if((i+1) * (i+2) / 2 == this->lengths.size()){
-            this->seq_length = (i+1) * (i+2) / 2;
+        if((i + 1) * (i + 2) / 2 == this->lengths.size()){
+            this->seq_length = (i + 1) * (i + 2) / 2;
             this->map_size = i + 1;
             valid_size = true;
             break;

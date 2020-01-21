@@ -13,21 +13,21 @@
 
 class Map{
 private:
-    int seq_length, map_size, start_chop;
-    std::vector<int*> lengths;
-    std::vector<int*> solution;
+   int seq_length, map_size, start_chop;
+   std::vector<int *> lengths;
+   std::vector<int *> solution;
 
-    void isValid();
+   void isValid();
 
 public:
 
-    int getMapSize();
-    void readLengths();
+   void readLengths();
 
-    void assembleMap(int iteration, bool &found);
+   void assembleMap(int iteration, bool &found);
 
-    std::vector<int*> getSolution();
-    std::vector<int*> getLengths();
+   std::vector<int *> getSolution();
+
+   std::vector<int *> getLengths();
 };
 
 

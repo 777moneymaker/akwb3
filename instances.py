@@ -7,7 +7,7 @@ import random
 
 VALID_SIZES = [i for i in range(1, 120) for n in range(1, 120) if i == (n+1)*(n+2) // 2]
 
-rand_map, lst = [1, 1, 2, 1, 2, 4, 6], []
+rand_map, lst = [1, 2, 2, 4, 6], []
 
 for i in range(len(rand_map)):
 
