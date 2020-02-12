@@ -10,7 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-#include <random>
+#include<random>
 
 using namespace std;
 
@@ -24,19 +24,28 @@ vector<int *> Map::getSolution(){
 }
 
 void Map::assembleMap(int iteration, bool &found){
-    bool sum_found = false;
-    vector<int> used;
-    used.resize(this->seq_length);
 
+    bool sum_found = false;
+    vector<int> used(this->lengths.size());
     for(int i = 0; i < this->lengths.size(); i++){
-        for(int j = 0; j < this->solution.size(); j++){
-            if(this->solution[j] == this->lengths[i]){
-                if(not(used[i])){
-                    used[i] = 1;
-                }
-            }
+        if(count(this->solution.begin(), this->solution.end(), this->lengths[i])){
+            used[i] = 1;
         }
     }
+//    for(auto val : this->solution){
+//        if(val != nullptr)
+//            cout << *val << " ";
+//        else
+//            cout << "0 ";
+//    }
+//    cout << endl;
+    for(auto val : this->solution){
+        if(val != nullptr)
+            cout << *val << " ";
+        else
+            cout << "0 ";
+    }
+    cout << endl;
     if(iteration == this->map_size - 1){
         bool temp_solution = true;
         vector<int> sums;
@@ -74,25 +83,17 @@ void Map::assembleMap(int iteration, bool &found){
                 cout << *v << " ";
             cout << endl << endl;
             found = true;
-            return;
+            exit(EXIT_SUCCESS);
         }else{
-            for(int i = 0; i < this->lengths.size(); i++){
-                if(this->lengths[i] == this->solution[iteration]){
-                    used[i] = 0;
-                }
-            }
-            this->solution[iteration] = nullptr;
+            this->solution[iteration + 1] = nullptr;
         }
     }else{
         for(int i = 0; i < this->lengths.size(); i++){
             bool worth = true;
-
-            if(not used[i]){
+            if(!used[i]){
                 this->solution[iteration + 1] = this->lengths[i];
                 for(int j = 0; j < this->solution.size(); j++){
-
                     int assembly = this->solution[j] == nullptr ? 0 : *this->solution[j];
-
                     for(int k = j + 1; k < this->solution.size(); k++){
                         int sum = this->solution[k] == nullptr ? assembly + 0 : assembly + *this->solution[k];
                         assembly += this->solution[k] == nullptr ? 0 : *this->solution[k];
@@ -115,15 +116,10 @@ void Map::assembleMap(int iteration, bool &found){
                     if(not worth)
                         break;
                 }
-                if(found)
-                    break;
-
                 if(worth){
                     assembleMap(iteration + 1, found);
                 }else{
-                    for(int n = iteration + 1; n < this->solution.size(); n++)
-                        this->solution[n] = nullptr;
-                    continue;
+                    this->solution[iteration + 1] = nullptr;
                 }
             }
         }
@@ -136,7 +132,7 @@ bool ptrVal(int *a, int *b){
 
 void Map::readLengths(){
     // Read
-    fstream file("input.txt", ios::in);
+    fstream file("instance.txt", ios::in);
     if(not file.good()){
         cout << "Bad file!" << endl;
         return;
@@ -168,6 +164,7 @@ void Map::readLengths(){
         }else if(*this->lengths[i] > *max2){
             max2 = this->lengths[i];
         }
+
     }
     this->start_chop = *max1 - *max2;
     this->solution.resize(this->map_size);
@@ -177,9 +174,10 @@ void Map::readLengths(){
             break;
         }
     }
-    //    shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
-    //    sort(this->lengths.begin(), this->lengths.end(), ptrVal);
-
+    sort(this->lengths.begin(), this->lengths.end());
+    //shuffle(this->lengths.begin(), this->lengths.end(), std::random_device());
+    //reverse(this->lengths.begin(), this->lengths.end());
+    // 38 74 27 66 42 15 89 47 35 13 12 54
     return void();
 }
 
